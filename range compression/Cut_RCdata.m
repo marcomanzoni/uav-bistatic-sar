@@ -2,10 +2,10 @@ clear all
 close all
 clc
 %% COSTANTS
-chirp_sr = 56e6;                                % SDR sample rate
+chirp_sr = 40e6;                                % SDR sample rate
 chirp_bw = .9*chirp_sr;                         % actual chirp bandwidth 
 
-folder_name = '../mat_files/uav_test/20220826';
+folder_name = 'D:\Droni_Campaigns\20230208_monte_barro_auto';
 
 tx_wave = load(strcat('../tx_waveform/tx_waveform_S56M.mat')).s_pad;
 tx_wave = single(tx_wave);
@@ -25,13 +25,13 @@ addpath("../lib");       % add path of lib
 addpath("./utils");
 file_paths = listOnlyBinFiles(strcat(folder_name,'/RC/complete'));
 
-exp_num = 5;
+exp_num = 2; % Experiment number
 rc_file = file_paths(exp_num).complete_path;
 RC = load_bin(rc_file(1:end-3));
 
-figure,imagesc(abs(RC(:,1:100)))
+figure,imagesc(db(RC(:,1:end)))
 %% Cut tau ax with empirical values
-peak_idx = 21878;
+peak_idx = 134; %21878;
 %  [~,peak_idx] = max(RC(:,1));
 
 % check if the RC cut with margin is wrapped and need to be circshifted
@@ -41,6 +41,7 @@ if peak_idx + samp_margin > size(RC,1)
 elseif peak_idx - samp_margin < 1
     shift = samp_margin;
 end
+
 if shift ~=0
     RC= circshift(RC,shift, 1);
     peak_idx = peak_idx + shift;
@@ -62,5 +63,5 @@ R_ax = linspace(- R_margin,R_margin,size(RC_centered,1));
 
 tau_ax = linspace(0,PRI * size(RC_centered,2),size(RC_centered,2));
 
-figure,imagesc(tau_ax, R_ax ,abs(RC_centered) ),
+figure,imagesc(tau_ax, R_ax ,db(RC_centered) ),
 title('RC_{total}' ),xlabel("Slow time [s]"),ylabel("Range [m]")

@@ -37,4 +37,8 @@ else
         zeros(length(targets.targets.utm_x),1)].';
 end
 end
-
+% 
+% name = 'GPS Track Log';
+% kmlwriteline("test.kml",Position.latitude,Position.longitude,...
+%     Position.altitude,'Name',name,'Color','magenta','Width',4, ...
+%     'AltitudeMode','relativeToSeaLevel');

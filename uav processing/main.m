@@ -6,7 +6,7 @@ addpath(genpath('../lib' ));       % add path of lib
 addpath("./utils")
 
 %% CONSTANTS
-param = load("./test_parameters/20220826/test4").param;
+param = load("./test_parameters/20230208/test1.mat").param;
 [const] = initializeConstants(param);
 
 %% PRE-PROCESSING
@@ -44,7 +44,7 @@ plotRC(radar,[],1)
 %% FOCUSING
 [scenario] = defineFocusingGrid(const,scenario,RX);
 % Change here to use non GPU based processing
-[focus] = focusingTDBP_GPU(const,radar,scenario,RX,TX,(0:5:25));
+[focus] = focusingTDBP_GPU(const,radar,scenario,RX,TX,0);
 % EQUALIZE distance
 [focus] = equalizeDistanceRC(scenario,TX,focus);
 

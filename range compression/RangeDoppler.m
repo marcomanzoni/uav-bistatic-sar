@@ -6,7 +6,7 @@ chirp_sr = 40e6;                                % SDR sample rate
 chirp_bw = .9*chirp_sr;                         % actual chirp bandwidth 
 f0 = 1.65e9;
 lambda = physconst('LightSpeed')/f0;
-folder_name = '../mat_files/giuriati_test/20221020';
+folder_name = 'E:\Droni\20221213';
 
 tx_wave = load(strcat('../tx_waveform/tx_waveform_S56M.mat')).s_pad;
 tx_wave = single(tx_wave);
@@ -26,7 +26,7 @@ allProcTimer = tic;
 file_paths = listOnlyBinFiles(strcat(folder_name,'/RC/cut'));
 %%
 
-for exp_num =4 : length(file_paths)
+for exp_num = 1 : length(file_paths)
 file_path = file_paths(exp_num).complete_path;
 disp(' '),disp(['Loading raw data ' num2str(exp_num)]),tic
 RC =load_bin(file_path(1:end-3)); 
@@ -38,13 +38,17 @@ RC_raw = RC;
 OSF = 16;
 RC = interpolateRC(RC_raw,OSF,.9);
 t_ax = 0:dt/OSF:dt/OSF*size(RC,1);
-[~,max_idx ] = max(RC(:,100));
+[~,max_idx ] = max(RC(:,1000));
 
 zero_idx = floor(max_idx - ant_distance/(dR/OSF));
 RC = RC(zero_idx:end,:);
 R_ax = 0:dR/OSF/2:dR/OSF/2*(size(RC,1)-1);
-% figure
-% imagesc([],R_ax,abs(RC));
+
+figure
+imagesc([],R_ax,abs(RC));
+colormap('jet'); caxis([0 2e8]);
+title("Range compressed data"); xlabel("Samples in slow-time");
+ylabel("Range [m]");
 
 
 %% Windowed doppler (Normalized)
@@ -85,7 +89,8 @@ R_ax = 0:dR/OSF/2:dR/OSF/2*(size(RC,1)-1);
 %% Windowed doppler (Normalized dB)
 dop_win_size = 2^nextpow2(round(1 / PRI));     % window time of 1s at least
 win_idx = 1:dop_win_size;
-N_cycle = floor(size(RC,2)/dop_win_size)*2-1;
+stride = 4;
+N_cycle = floor(size(RC,2)/dop_win_size)*stride-1;
 
 slow_freq = linspace(-PRF/2,PRF/2,dop_win_size);
 speed_ax = slow_freq * lambda/2 * 3.6;
@@ -95,16 +100,18 @@ y_idx = and(R_ax>=-10,R_ax<200);
 x = speed_ax(x_idx);
 y = R_ax(y_idx);
 
-fig = figure("WindowState","maximized");
+fig = figure;%("WindowState","maximized");
 images ={}; 
 for i = 1:N_cycle
     RC_doppler = fftshift(fft(RC(:,win_idx),[],2),2);
     AA = 20*log10(abs(RC_doppler(y_idx,x_idx)));
-
+    AA(AA<150) = NaN;
     
-    win_idx = win_idx + dop_win_size/2;
-    imagesc(x,y,AA,[120 220]);
+    win_idx = win_idx + dop_win_size/stride;
+    imagesc(x,y,AA,[150 220]);
     title(num2str(i)),xlabel("speed [km/h]"),ylabel("Range [m]"), colormap jet, colorbar, 
+    c = colormap;
+    c = [0,0,0;c]; colormap(c);
     drawnow
     frame = getframe(fig);
     images{i} = frame2im(frame);
@@ -116,9 +123,9 @@ filename = strcat(file_paths(exp_num).exp_name,'.gif'); % Specify the output fil
 for idx = 1:N_cycle
     [A,map] = rgb2ind(images{idx},256);
     if idx == 1
-        imwrite(A,map,filename,'gif','LoopCount',Inf,'DelayTime',.1);
+        imwrite(A,map,filename,'gif','LoopCount',Inf,'DelayTime',dop_win_size/stride/PRF);
     else
-        imwrite(A,map,filename,'gif','WriteMode','append','DelayTime',.1);
+        imwrite(A,map,filename,'gif','WriteMode','append','DelayTime',dop_win_size/stride/PRF);
     end
 end
 end

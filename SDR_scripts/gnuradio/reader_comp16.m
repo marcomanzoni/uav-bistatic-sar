@@ -1,4 +1,6 @@
-folder = '../../mat_files/giuriati_test/20221020/raw/gnuradio/';
+%folder = '../../mat_files/giuriati_test/20221020/raw/gnuradio/';
+%folder = 'E:\Droni\';
+folder = 'D:\Droni_Campaigns\20230208_monte_barro_auto\raw\';
 dir_out = dir(folder);
 if(length(dir_out) == 2)
     disp("No file presents")
@@ -12,14 +14,17 @@ for i =1 : length(dir_out)
     end
 %%
 file_path = strcat(folder,dir_out(i).name);
-last_mod_date = datetime(dir(file_path).date,'Locale','it_IT','InputFormat','dd-MMM-yyyy HH:mm:ss','Format','yyyy-MM-dd HH:mm:ss.SSS');
+% last_mod_date = datetime(dir(file_path).date,'Locale','it_IT','InputFormat','dd-MMM-yyyy HH:mm:ss','Format','yyyy-MM-dd HH:mm:ss.SSS');
+last_mod_date = datetime(dir_out(i).date,'Locale','it_IT','InputFormat','dd-MMM-yyyy HH:mm:ss','Format','yyyy-MM-dd HHmmss');
+
 f = fopen(file_path, 'rb');
 
 read_L = 1e9;                       % length to be read each iteration
 values = zeros(read_L,1,"int16");
 idx = 1;
 y = zeros(0,1,'int16');
-LL = dir(file_path).bytes /4;          % num complex samples
+%LL = dir(file_path).bytes /4;          % num complex samples
+LL = dir_out(i).bytes /4;
 while ~isempty(values) 
 
     values= fread(f,read_L,"int16=>int16");

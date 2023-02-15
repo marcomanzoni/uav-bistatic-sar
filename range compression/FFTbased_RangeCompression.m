@@ -5,7 +5,8 @@ clc
 chirp_sr = 40e6;                                % SDR sample rate
 chirp_bw = .9*chirp_sr;                         % actual chirp bandwidth 
 
-folder_name = '../mat_files/giuriati_test/20221020';
+%folder_name = 'E:\Droni\20221213';
+folder_name = 'D:\Droni_Campaigns\20230208_monte_barro_auto'
 
 tx_wave = load(strcat('../tx_waveform/tx_waveform_S56M.mat')).s_pad;
 tx_wave = single(tx_wave);
@@ -76,6 +77,6 @@ for slice_idx = 1:N_slice:size(A,2)
 end
 disp(['Finished Range Compression in ' num2str(toc(timer)) ' s'])
 
-clear N_fft matFFT txWaveFFT firstHalf A_rc_slice i slice_idx ss
+  clear N_fft matFFT txWaveFFT firstHalf A_rc_slice i slice_idx ss
 
 end
