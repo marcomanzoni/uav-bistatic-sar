@@ -38,6 +38,8 @@ else
 end
     end
 
+
+    % This is a test for github 
 % 
 % name = 'GPS Track Log';
 % kmlwriteline("test.kml",Position.latitude,Position.longitude,...
