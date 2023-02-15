@@ -36,7 +36,8 @@ else
     targets = [targets.targets.utm_x(:),targets.targets.utm_y(:),...
         zeros(length(targets.targets.utm_x),1)].';
 end
-end
+    end
+
 % 
 % name = 'GPS Track Log';
 % kmlwriteline("test.kml",Position.latitude,Position.longitude,...
