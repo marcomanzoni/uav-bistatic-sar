@@ -40,7 +40,6 @@ plotRC(radar,[],1)
 % plotRC(radar,scenario,2);
 % plotRC(radar,scenario,3);
 
-
 %% FOCUSING
 [scenario] = defineFocusingGrid(const,scenario,RX);
 % Change here to use non GPU based processing
